@@ -4,13 +4,15 @@
  * and open the template in the editor.
  */
 
-package fr.isima.javapro.ejb;
+package fr.isima.javapro.interceptor;
 
-import fr.isima.javapro.annotation.Singleton;
+import fr.isima.javapro.invocation.Invocation;
 
 /**
  *
  * @author Ulrich EZA
  */
-@Singleton
-public class ThirdEJB extends EJBDefaultImpl implements ThirdEJBLocal{ }
+public interface Interceptor {
+    
+    void invoke(Invocation invocation);
+}

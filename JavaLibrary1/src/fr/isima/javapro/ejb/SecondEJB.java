@@ -6,10 +6,24 @@
 
 package fr.isima.javapro.ejb;
 
+import fr.isima.javapro.annotation.Statefull;
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
+
 /**
  *
  * @author Ulrich EZA
  */
+@Statefull
 public class SecondEJB extends EJBDefaultImpl implements SecondEJBLocal {
     
+    @PostConstruct
+    public void postConstruct(){
+        value+= 5;
+    }
+    
+    @PreDestroy
+    public void preDestroy(){
+        value -= 5;
+    }
 }
