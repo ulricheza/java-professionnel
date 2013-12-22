@@ -14,5 +14,5 @@ import fr.isima.javapro.invocation.Invocation;
  */
 public interface Interceptor {
     
-    void invoke(Invocation invocation);
+    Object invoke(Invocation invocation);
 }

@@ -16,13 +16,13 @@ import java.util.Iterator;
  */
 public class Invocation {
     
-    private final Iterator<Interceptor> interceptors;
+    private final Interceptor[] interceptors;
     private final Object bean;
     private final Method method;
     private final Object[] args;
-    private Object result;
+    private int index;
     
-    public Invocation(Iterator<Interceptor> interceptors, Object bean, Method method, Object[] args){
+    public Invocation(Interceptor[] interceptors, Object bean, Method method, Object[] args){
         this.interceptors = interceptors;
         this.bean = bean;
         this.method = method;
@@ -41,15 +41,7 @@ public class Invocation {
         return args;
     }
     
-    public void setResult(Object result){
-        this.result = result;
-    }
-    
-    public Object invoke(){         
-        while (interceptors.hasNext()){
-            interceptors.next().invoke(this);
-        }
-     
-        return result;
+    public Object nextInterceptor(){         
+        return interceptors[index++].invoke(this);
     }
 }

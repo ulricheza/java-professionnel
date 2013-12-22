@@ -7,21 +7,20 @@
 package fr.isima.javapro;
 
 import fr.isima.javapro.annotation.EJB;
-import fr.isima.javapro.ejb.ThirdEJBLocal;
+import fr.isima.javapro.ejb.SecondEJBLocal;
+import fr.isima.javapro.exception.NoSuchEJBException;
 import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
+import org.junit.Before;
 
 /**
  *
  * @author Ulrich EZA
  */
-public class TestSingleton {
+public class TestRemove {
     
     @EJB
-    ThirdEJBLocal ejbSingleton1;
-    @EJB
-    ThirdEJBLocal ejbSingleton2;
+    SecondEJBLocal ejbStatefull;
     
     @Before
     public void setUp()  {
@@ -32,13 +31,11 @@ public class TestSingleton {
     public void tearDown() {
         EJBContainer.getInstance().close();
     }
-       
-    /**
-     * Checks the @Singleton annotation
-     */
-    @Test
-    public void singleton(){
-        // ejbSingleton1 et ejbSingleton2 must be the same objects 
-        assert (ejbSingleton1 == ejbSingleton2);
+    
+    @Test(expected = NoSuchEJBException.class)    
+    public void remove() {
+        assert (ejbStatefull.getValue() == 5);        
+        ejbStatefull.remove(); // The EJB should be released after this method (@Remove annotation)
+        ejbStatefull.getValue();
     }
 }

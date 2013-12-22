@@ -6,6 +6,7 @@
 
 package fr.isima.javapro.ejb;
 
+import fr.isima.javapro.annotation.Remove;
 import fr.isima.javapro.annotation.Statefull;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -20,6 +21,12 @@ public class SecondEJB extends EJBDefaultImpl implements SecondEJBLocal {
     @PostConstruct
     public void postConstruct(){
         value+= 5;
+    }
+    
+    @Remove
+    @Override
+    public void remove(){
+        value = 0;
     }
     
     @PreDestroy

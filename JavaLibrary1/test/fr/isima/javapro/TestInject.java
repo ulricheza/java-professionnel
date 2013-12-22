@@ -10,6 +10,7 @@ import fr.isima.javapro.annotation.EJB;
 import fr.isima.javapro.ejb.FirstEJBLocal;
 import fr.isima.javapro.ejb.SecondEJBLocal;
 import fr.isima.javapro.ejb.ThirdEJBLocal;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -35,6 +36,11 @@ public class TestInject {
     @Before
     public void setUp()  {
         EJBContainer.getInstance().inject(this);        
+    }
+    
+    @After
+    public void tearDown() {
+        EJBContainer.getInstance().close();
     }
     
     /**

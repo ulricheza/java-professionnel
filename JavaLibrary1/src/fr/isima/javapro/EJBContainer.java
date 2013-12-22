@@ -7,22 +7,28 @@
 package fr.isima.javapro;
 
 import fr.isima.javapro.annotation.EJB;
-import fr.isima.javapro.annotation.Singleton;
+import fr.isima.javapro.annotation.Stateless;
 import fr.isima.javapro.ejb.FirstEJB;
 import fr.isima.javapro.ejb.FirstEJBLocal;
 import fr.isima.javapro.ejb.SecondEJB;
 import fr.isima.javapro.ejb.SecondEJBLocal;
 import fr.isima.javapro.ejb.ThirdEJB;
 import fr.isima.javapro.ejb.ThirdEJBLocal;
+import fr.isima.javapro.interceptor.Interceptor;
+import fr.isima.javapro.interceptor.MethodInterceptor;
 import fr.isima.javapro.invocation.EJBInvocationHandler;
+import fr.isima.javapro.invocation.MethodManager;
 import java.lang.reflect.Field;
 import java.lang.reflect.Proxy;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.logging.ConsoleHandler;
 import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.annotation.PreDestroy;
 
 /**
  *
@@ -32,7 +38,9 @@ public class EJBContainer {
     
     private static EJBContainer INSTANCE;
     private final Map<Class<?>, Class<?>> registry;
-    private final Map<Class<?>, Object> singletonProxys;
+    private final Map<Class<?>, Object> listProxys;
+    private final List<EJBStatus> listEJBs;
+    private final Interceptor[] interceptors;
     private static final Logger LOG = Logger.getLogger(EJBContainer.class.getName());
     
     public static EJBContainer getInstance() {
@@ -42,7 +50,11 @@ public class EJBContainer {
     
     private EJBContainer(){
         registry = new HashMap<>();
-        singletonProxys = new HashMap<>();
+        listProxys = new HashMap<>();
+        listEJBs = new ArrayList<>();
+        interceptors = new Interceptor[] {
+            new MethodInterceptor()           
+        };
         
         configureLogging();
         bootstrapInit();
@@ -56,6 +68,8 @@ public class EJBContainer {
                 handler.setLevel(Level.FINER);
             }
         }
+        
+        LOG.log(Level.FINEST, "Logging set up");
     }
     
     private void bootstrapInit() {
@@ -67,28 +81,28 @@ public class EJBContainer {
         registry.put(ThirdEJBLocal.class, ThirdEJB.class);
         
         // manage errors
+        
+        LOG.log(Level.FINEST, "EJBs' implementations mapping done.");
     }
     
     private Object createProxy(Class<?> beanInterface, Class<?> beanClass){
-         return Proxy.newProxyInstance(
+        return Proxy.newProxyInstance(
                 Thread.currentThread().getContextClassLoader(),
                 new Class[] {beanInterface},
-                new EJBInvocationHandler(beanClass));
+                new EJBInvocationHandler(beanClass,interceptors));
     }
     
     private Object createProxy(Class<?> beanInterface){
         Class<?> beanClass = registry.get(beanInterface);
                
-        // singleton EJBs must be unique in the JVM
-        if (beanClass.isAnnotationPresent(Singleton.class)){
-            if (!singletonProxys.containsKey(beanClass)){
-                singletonProxys.put(beanClass, createProxy(beanInterface,beanClass));
-            }
-            
-            return singletonProxys.get(beanClass);
+        Object proxy = listProxys.get(beanClass);        
+        if (proxy == null){
+            proxy = createProxy(beanInterface,beanClass);
+            if(!beanClass.isAnnotationPresent(Stateless.class))  // Statetefull or Singleton
+                listProxys.put(beanClass,proxy);
         }
         
-        return createProxy(beanInterface,beanClass);
+        return proxy;
     }
     
     public void inject (Object o){
@@ -105,8 +119,8 @@ public class EJBContainer {
                     // set field value to proxy
                     f.set(o, beanInterface.cast(proxy));  
                     
-                    // perform some logs
-                    LOG.log(Level.CONFIG, "Proxy initialized for bean {0}",f.getName());
+                    // log info
+                    LOG.log(Level.CONFIG, "Injected local implementation of bean {0}",f.getName());
                 }
             }
         }
@@ -127,5 +141,31 @@ public class EJBContainer {
         // manage @TransactionAttribute (Required and Required new) and strategies 
         
         // manage errors
+    }
+    
+    public void close(){
+        listProxys.clear();
+        
+        if (!listEJBs.isEmpty()) LOG.config("Releasing non-released EJBs...");
+        for (EJBStatus s : listEJBs)
+            if (!s.removed)
+                MethodManager.invokeMethodWithDeclaredAnnotation(s.ejb, PreDestroy.class, null);
+        if (!listEJBs.isEmpty()) LOG.config("Releasing done");
+        
+        listEJBs.clear();
+    }
+    
+    public void addEJB(EJBStatus ejb){
+        listEJBs.add(ejb);
+    }
+    
+    public static class EJBStatus{
+        public boolean removed;
+        Object ejb;
+        
+        public EJBStatus(Object ejb){
+            this.ejb = ejb;
+            this.removed = false;
+        }
     }
 }

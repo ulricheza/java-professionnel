@@ -4,16 +4,15 @@
  * and open the template in the editor.
  */
 
-package fr.isima.javapro.ejb;
-
-import fr.isima.javapro.annotation.Local;
+package fr.isima.javapro.exception;
 
 /**
  *
  * @author Ulrich EZA
  */
-@Local
-public interface SecondEJBLocal extends EJBInterface {
+public class NoSuchEJBException extends RuntimeException {
     
-    public void remove();
+    public NoSuchEJBException(String msg){
+        super(msg);
+    }
 }

@@ -8,6 +8,7 @@ package fr.isima.javapro;
 
 import fr.isima.javapro.annotation.EJB;
 import fr.isima.javapro.ejb.SecondEJBLocal;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -24,7 +25,12 @@ public class TestStatefull {
     public void setUp()  {
         EJBContainer.getInstance().inject(this);        
     }
-              
+    
+    @After
+    public void tearDown() {
+        EJBContainer.getInstance().close();
+    }
+    
     /**
      * Checks the @Statefull annotation
      */
