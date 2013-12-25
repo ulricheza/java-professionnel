@@ -15,6 +15,7 @@ import org.junit.runners.Suite;
  */
 @RunWith(Suite.class)
 @Suite.SuiteClasses({fr.isima.javapro.TestInject.class, 
+    fr.isima.javapro.TestPersistenceContext.class,
     fr.isima.javapro.TestPostConstruct.class,
     fr.isima.javapro.TestRemove.class,
     fr.isima.javapro.TestSingleton.class,

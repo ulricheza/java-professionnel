@@ -42,9 +42,8 @@ public class MethodManager {
             LOG.exiting(bean.getClass().getName(), method.getName());
         } 
         catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
-            MethodInvocationException e = new MethodInvocationException(ex);
-            LOG.throwing(bean.getClass().getName(), method.getName(), e);           
-            throw e;
+            LOG.throwing(bean.getClass().getName(), method.getName(), ex);           
+            throw new MethodInvocationException(ex);
         }
         
         return result;
@@ -67,9 +66,8 @@ public class MethodManager {
             }
         } 
         catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
-            MethodInvocationException e = new MethodInvocationException(ex);
-            LOG.throwing(bean.getClass().getName(), method.getName(), e);           
-            throw e;
+            LOG.throwing(bean.getClass().getName(), method.getName(), ex);           
+            throw new MethodInvocationException(ex);
         }
         
         return result;

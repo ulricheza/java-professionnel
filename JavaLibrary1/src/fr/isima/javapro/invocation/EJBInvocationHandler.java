@@ -51,6 +51,7 @@ public class EJBInvocationHandler implements InvocationHandler {
             
             ejbStatus = new EJBContainer.EJBStatus(bean);
             EJBContainer.getInstance().addEJB(ejbStatus);
+            EJBContainer.getInstance().inject(bean);
         }
         
         //Check that the bean has not been removed

@@ -7,9 +7,12 @@
 package fr.isima.javapro;
 
 import fr.isima.javapro.annotation.EJB;
+import fr.isima.javapro.annotation.PersistenceContext;
 import fr.isima.javapro.annotation.Stateless;
 import fr.isima.javapro.ejb.FirstEJB;
 import fr.isima.javapro.ejb.FirstEJBLocal;
+import fr.isima.javapro.ejb.FourthEJB;
+import fr.isima.javapro.ejb.FourthEJBLocal;
 import fr.isima.javapro.ejb.SecondEJB;
 import fr.isima.javapro.ejb.SecondEJBLocal;
 import fr.isima.javapro.ejb.ThirdEJB;
@@ -37,6 +40,7 @@ import javax.annotation.PreDestroy;
 public class EJBContainer {
     
     private static EJBContainer INSTANCE;
+    private static final Level LOG_LEVEL = Level.FINER;
     private final Map<Class<?>, Class<?>> registry;
     private final Map<Class<?>, Object> listProxys;
     private final List<EJBStatus> listEJBs;
@@ -65,7 +69,7 @@ public class EJBContainer {
         root.setLevel(Level.ALL);
         for (Handler handler : root.getHandlers()) {          
             if (handler instanceof ConsoleHandler) {
-                handler.setLevel(Level.FINER);
+                handler.setLevel(LOG_LEVEL);
             }
         }
         
@@ -79,6 +83,7 @@ public class EJBContainer {
         registry.put(FirstEJBLocal.class, FirstEJB.class);
         registry.put(SecondEJBLocal.class,SecondEJB.class);
         registry.put(ThirdEJBLocal.class, ThirdEJB.class);
+        registry.put(FourthEJBLocal.class, FourthEJB.class);
         
         // manage errors
         
@@ -110,6 +115,8 @@ public class EJBContainer {
         try{
             Field[] fields = o.getClass().getDeclaredFields();
             for (Field f : fields ) {
+                f.setAccessible(true);
+                
                 if (f.isAnnotationPresent(EJB.class)){                    
                     Class<?> beanInterface = (Class<?>) f.getGenericType();
                     
@@ -120,14 +127,25 @@ public class EJBContainer {
                     f.set(o, beanInterface.cast(proxy));  
                     
                     // log info
-                    LOG.log(Level.CONFIG, "Injected local implementation of bean {0}",f.getName());
+                    LOG.log(Level.FINEST, "Injected local implementation of bean {0}",
+                            o.getClass().getSimpleName()+"."+f.getName());
                 }
+                else if (f.isAnnotationPresent(PersistenceContext.class)){
+                    Class<?> beanClass = (Class<?>) f.getGenericType();
+                    
+                    f.set(o, beanClass.newInstance());
+                    
+                    // log info
+                    LOG.log(Level.FINEST, "Injected PersistenceContext {0}",
+                            o.getClass().getSimpleName()+"."+f.getName());               
+                }
+                
+                f.setAccessible(false);
             }
         }
-        catch (IllegalArgumentException | IllegalAccessException ex) {
+        catch (IllegalArgumentException | IllegalAccessException | InstantiationException ex) {
             LOG.log(Level.SEVERE, null, ex);
         }
-        
         // scan all @EJB and inject EJB implementations
         
         // manage @Stateless & @Statefull & @Singleton strategies -> do not arrange EJB pool
@@ -146,11 +164,11 @@ public class EJBContainer {
     public void close(){
         listProxys.clear();
         
-        if (!listEJBs.isEmpty()) LOG.config("Releasing non-released EJBs...");
+        if (!listEJBs.isEmpty()) LOG.finer("Releasing non-released EJBs...");
         for (EJBStatus s : listEJBs)
             if (!s.removed)
                 MethodManager.invokeMethodWithDeclaredAnnotation(s.ejb, PreDestroy.class, null);
-        if (!listEJBs.isEmpty()) LOG.config("Releasing done");
+        if (!listEJBs.isEmpty()) LOG.finer("Releasing done");
         
         listEJBs.clear();
     }
