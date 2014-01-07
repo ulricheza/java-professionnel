@@ -13,10 +13,6 @@ import org.junit.After;
 import org.junit.Test;
 import org.junit.Before;
 
-/**
- *
- * @author Ulrich EZA
- */
 public class TestRemove {
     
     @EJB

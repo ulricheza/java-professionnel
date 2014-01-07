@@ -12,14 +12,10 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-/**
- *
- * @author Ulrich EZA
- */
 public class TestPostConstruct {
     
     @EJB
-    SecondEJBLocal ejbStatefull1;
+    SecondEJBLocal ejbStatefull;
     
     @Before
     public void setUp()  {
@@ -38,9 +34,9 @@ public class TestPostConstruct {
     public void postConstruct(){        
         // The PostConstruct is only called the first time 
         // and it increments the value by 5
-        assert (ejbStatefull1.getValue() == 5);
+        assert (ejbStatefull.getValue() == 5);
         
         // The second time, nothing should be done 
-        assert (ejbStatefull1.getValue() == 5);
+        assert (ejbStatefull.getValue() == 5);
     }
 }

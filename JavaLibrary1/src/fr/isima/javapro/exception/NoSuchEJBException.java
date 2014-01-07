@@ -6,10 +6,6 @@
 
 package fr.isima.javapro.exception;
 
-/**
- *
- * @author Ulrich EZA
- */
 public class NoSuchEJBException extends RuntimeException {
     
     public NoSuchEJBException(String msg){

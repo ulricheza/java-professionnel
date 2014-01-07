@@ -8,18 +8,14 @@ package fr.isima.javapro.invocation;
 
 import fr.isima.javapro.interceptor.Interceptor;
 import java.lang.reflect.Method;
-import java.util.Iterator;
 
-/**
- *
- * @author Ulrich EZA
- */
 public class Invocation {
     
     private final Interceptor[] interceptors;
     private final Object bean;
     private final Method method;
     private final Object[] args;
+    private boolean transactionOpened = false;
     private int index;
     
     public Invocation(Interceptor[] interceptors, Object bean, Method method, Object[] args){
@@ -39,6 +35,13 @@ public class Invocation {
     
     public Object[] getArgs() {
         return args;
+    }
+    
+    public boolean isTransactionOpened(){
+        return transactionOpened;
+    }
+    public void setTransactionOpened(boolean transactionOpened){
+        this.transactionOpened = transactionOpened;
     }
     
     public Object nextInterceptor(){         

@@ -8,9 +8,5 @@ package fr.isima.javapro.ejb;
 
 import fr.isima.javapro.annotation.Singleton;
 
-/**
- *
- * @author Ulrich EZA
- */
 @Singleton
 public class ThirdEJB extends EJBDefaultImpl implements ThirdEJBLocal{ }

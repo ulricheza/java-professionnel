@@ -8,9 +8,5 @@ package fr.isima.javapro.ejb;
 
 import fr.isima.javapro.annotation.Local;
 
-/**
- *
- * @author Ulrich EZA
- */
 @Local
 public interface FirstEJBLocal extends EJBInterface { }

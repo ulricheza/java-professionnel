@@ -6,10 +6,6 @@
 
 package fr.isima.javapro.exception;
 
-/**
- *
- * @author Ulrich EZA
- */
 public class MethodInvocationException extends RuntimeException {
     
     public MethodInvocationException(String msg){

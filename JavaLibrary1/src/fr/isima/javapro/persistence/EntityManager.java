@@ -6,27 +6,20 @@
 
 package fr.isima.javapro.persistence;
 
-import java.util.ArrayList;
-import java.util.List;
-
-/**
- *
- * @author Ulrich EZA
- */
 public class EntityManager {
     
-    private static final List<Object> database = new ArrayList<>();
+    private static final Database database = Database.getInstance();
     
     public void add (Object item){
         database.add(item);
     }
     
-    public List<Object> getAllItems(){
-        return database;
+    public Object[] getAllItems(){
+        return database.getAllItems();
     }
     
     public int count(){
-        return database.size();
+        return database.count();
     }
     
     public void clear(){

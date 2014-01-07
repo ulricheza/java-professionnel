@@ -9,7 +9,9 @@ package fr.isima.javapro.ejb;
 import fr.isima.javapro.annotation.Local;
 
 @Local
-public interface SecondEJBLocal extends EJBInterface {
+public interface FifthEJBLocal {
     
-    public void remove();
+    void addRequired(Object item);
+    void addRequiredNew(Object item);
+    void clear();
 }

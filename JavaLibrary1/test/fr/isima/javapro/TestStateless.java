@@ -12,10 +12,6 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-/**
- *
- * @author Ulrich EZA
- */
 public class TestStateless {
     
     @EJB
@@ -36,8 +32,7 @@ public class TestStateless {
      */
     @Test
     public void stateless() {
-        ejbStateless.setValue(10);
-        
+        ejbStateless.setValue(10);        
         assert (ejbStateless.getValue() == 0);
     }
 }

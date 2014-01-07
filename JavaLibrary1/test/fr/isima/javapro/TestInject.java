@@ -14,10 +14,6 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-/**
- *
- * @author Ulrich EZA
- */
 public class TestInject {
     
     @EJB
@@ -48,7 +44,7 @@ public class TestInject {
      */
     @Test
     public void inject() {
-        assert (ejbStateless instanceof FirstEJBLocal);
+        assert (ejbStateless  instanceof FirstEJBLocal);
         assert (ejbStatefull1 instanceof SecondEJBLocal);
         assert (ejbStatefull1 instanceof SecondEJBLocal);
         assert (ejbSingleton1 instanceof ThirdEJBLocal);

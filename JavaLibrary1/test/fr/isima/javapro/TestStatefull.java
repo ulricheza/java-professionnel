@@ -12,14 +12,10 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-/**
- *
- * @author Ulrich EZA
- */
 public class TestStatefull {
     
     @EJB
-    SecondEJBLocal ejbStatefull1;
+    SecondEJBLocal ejbStatefull;
   
     @Before
     public void setUp()  {
@@ -36,8 +32,7 @@ public class TestStatefull {
      */
     @Test 
     public void statefull(){
-        ejbStatefull1.setValue(10);
-        
-        assert(ejbStatefull1.getValue() == 10);
+        ejbStatefull.setValue(10);        
+        assert(ejbStatefull.getValue() == 10);
     }
 }

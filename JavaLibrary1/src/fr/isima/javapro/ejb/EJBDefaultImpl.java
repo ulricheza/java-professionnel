@@ -6,10 +6,6 @@
 
 package fr.isima.javapro.ejb;
 
-/**
- *
- * @author Ulrich EZA
- */
 public class EJBDefaultImpl implements EJBInterface {
     
     protected int value;

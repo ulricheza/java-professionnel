@@ -8,14 +8,11 @@ package fr.isima.javapro.ejb;
 
 import fr.isima.javapro.annotation.Local;
 
-/**
- *
- * @author Ulrich EZA
- */
 @Local
 public interface FourthEJBLocal {
     
-    void add(Object item);
+    void addRequired(Object item);
+    void addRequiredNew(Object item);
     int count();
     void remove();
 }

@@ -8,9 +8,5 @@ package fr.isima.javapro.ejb;
 
 import fr.isima.javapro.annotation.Stateless;
 
-/**
- *
- * @author Ulrich EZA
- */
 @Stateless
 public class FirstEJB  extends EJBDefaultImpl implements FirstEJBLocal{ }

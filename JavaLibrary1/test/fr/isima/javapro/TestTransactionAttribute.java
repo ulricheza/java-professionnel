@@ -8,19 +8,19 @@ package fr.isima.javapro;
 
 import fr.isima.javapro.annotation.EJB;
 import fr.isima.javapro.annotation.PersistenceContext;
-import fr.isima.javapro.ejb.FourthEJBLocal;
+import fr.isima.javapro.ejb.FifthEJBLocal;
 import fr.isima.javapro.persistence.EntityManager;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-public class TestPersistenceContext {
+public class TestTransactionAttribute {
+    
+    @EJB
+    private FifthEJBLocal ejb;
     
     @PersistenceContext
     private EntityManager em;
-    
-    @EJB
-    private FourthEJBLocal ejb;
     
     @Before
     public void setUp() {
@@ -29,18 +29,31 @@ public class TestPersistenceContext {
     
     @After
     public void tearDown() {
-         EJBContainer.getInstance().close();
+        EJBContainer.getInstance().close();
     }
     
     @Test
-    public void persistenceContext(){
-        assert(em instanceof EntityManager);
-        assert(ejb.count() == 1);
-        
-        em.add("Second item");
-        assert(ejb.count() == 2);
-        
-        ejb.remove();
-        assert(em.count() == 0);
-    }
+    public void testRequiredNew(){
+        try{
+            ejb.addRequiredNew("1");
+        }
+        catch(Exception e){
+            
+        }
+        finally{        
+            assert(em.count() == 2);
+            ejb.clear();
+        }
+    }   
+    
+    @Test
+    public void testRequired(){
+        try{
+            ejb.addRequired("1");
+        }
+        catch(Exception e){
+            
+        }
+        assert(em.count() == 0);     
+    }   
 }

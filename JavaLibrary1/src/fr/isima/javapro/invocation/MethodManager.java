@@ -12,10 +12,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.logging.Logger;
 
-/**
- *
- * @author Ulrich EZA
- */
 public class MethodManager {
     private static final Logger LOG = Logger.getLogger(MethodManager.class.getName());
     
@@ -42,7 +38,7 @@ public class MethodManager {
             LOG.exiting(bean.getClass().getName(), method.getName());
         } 
         catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
-            LOG.throwing(bean.getClass().getName(), method.getName(), ex);           
+            //LOG.throwing(bean.getClass().getName(), method.getName(), ex);           
             throw new MethodInvocationException(ex);
         }
         
@@ -55,7 +51,7 @@ public class MethodManager {
             Object[] args){
         
         Object result = null;
-        Method method = null;
+        Method method;
         
         try {
             method = findMethodWithDeclaredAnnotation(bean, annotationClass);
@@ -66,7 +62,7 @@ public class MethodManager {
             }
         } 
         catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
-            LOG.throwing(bean.getClass().getName(), method.getName(), ex);           
+            //if (method != null) LOG.throwing(bean.getClass().getName(), method.getName(), ex);           
             throw new MethodInvocationException(ex);
         }
         

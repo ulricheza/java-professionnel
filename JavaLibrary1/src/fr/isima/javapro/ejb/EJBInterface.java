@@ -6,10 +6,6 @@
 
 package fr.isima.javapro.ejb;
 
-/**
- *
- * @author Ulrich EZA
- */
 public interface EJBInterface {
     
     int getValue();

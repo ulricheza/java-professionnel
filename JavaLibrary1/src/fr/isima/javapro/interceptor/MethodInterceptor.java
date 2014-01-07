@@ -6,14 +6,11 @@
 
 package fr.isima.javapro.interceptor;
 
+import fr.isima.javapro.EJBContainer;
 import fr.isima.javapro.invocation.MethodManager;
 import fr.isima.javapro.invocation.Invocation;
 import java.lang.reflect.Method;
 
-/**
- *
- * @author Ulrich EZA
- */
 public class MethodInterceptor implements Interceptor {
     
     @Override
@@ -21,7 +18,24 @@ public class MethodInterceptor implements Interceptor {
         Object bean   = invocation.getBean();
         Method method = invocation.getMethod();
         Object[] args = invocation.getArgs();
-            
-        return MethodManager.invokeMethod(bean, method, args);
+        
+        Object result = null;
+        
+        try{
+           result = MethodManager.invokeMethod(bean, method, args);
+        }
+        catch(Exception e){
+            if (invocation.isTransactionOpened()){
+                EJBContainer.getInstance().rollback();
+                return result;
+            }
+            else
+                throw e;
+        }
+        
+        if (invocation.isTransactionOpened()) 
+            EJBContainer.getInstance().commit();
+        
+        return result;              
     }   
 }

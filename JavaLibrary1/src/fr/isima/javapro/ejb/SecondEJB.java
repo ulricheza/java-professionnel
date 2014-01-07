@@ -11,10 +11,6 @@ import fr.isima.javapro.annotation.Statefull;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 
-/**
- *
- * @author Ulrich EZA
- */
 @Statefull
 public class SecondEJB extends EJBDefaultImpl implements SecondEJBLocal {
     

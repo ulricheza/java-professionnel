@@ -6,47 +6,34 @@
 
 package fr.isima.javapro.ejb;
 
+import fr.isima.javapro.annotation.EJB;
 import fr.isima.javapro.annotation.PersistenceContext;
-import fr.isima.javapro.annotation.Remove;
 import fr.isima.javapro.annotation.Statefull;
-import fr.isima.javapro.annotation.TransactionAttribute;
-import fr.isima.javapro.annotation.TransactionAttributeType;
 import fr.isima.javapro.persistence.EntityManager;
-import javax.annotation.PostConstruct;
 
 @Statefull
-@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
-public class FourthEJB implements FourthEJBLocal{
+public class FifthEJB implements FifthEJBLocal {
     
     @PersistenceContext
     private EntityManager em;
     
-    @PostConstruct
-    public void initialize(){
-        em.add("First Item");
-    } 
+    @EJB
+    private FourthEJBLocal ejb;
     
-    @TransactionAttribute(TransactionAttributeType.REQUIRED)
     @Override
     public void addRequired(Object item){
         em.add(item);
-        int i = 0/0;
+        ejb.addRequired(item);
     }
     
     @Override
     public void addRequiredNew(Object item){
         em.add(item);
-        int i = 0/0;
+        ejb.addRequiredNew(item);
     }
     
     @Override
-    public int count(){
-        return em.count();
-    }
-   
-    @Remove
-    @Override
-    public void remove(){
+    public void clear(){
         em.clear();
-    }    
+    }
 }

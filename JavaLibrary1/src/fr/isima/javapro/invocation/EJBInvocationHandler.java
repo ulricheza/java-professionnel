@@ -17,10 +17,6 @@ import java.lang.reflect.Method;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 
-/**
- *
- * @author Ulrich EZA
- */
 public class EJBInvocationHandler implements InvocationHandler {
     
     private final Class<?> beanClass;
@@ -49,8 +45,7 @@ public class EJBInvocationHandler implements InvocationHandler {
             bean = beanClass.newInstance();
             postConstruct = true;
             
-            ejbStatus = new EJBContainer.EJBStatus(bean);
-            EJBContainer.getInstance().addEJB(ejbStatus);
+            ejbStatus = EJBContainer.getInstance().addEJB(bean);
             EJBContainer.getInstance().inject(bean);
         }
         

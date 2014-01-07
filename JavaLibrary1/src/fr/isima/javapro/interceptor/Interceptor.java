@@ -8,11 +8,6 @@ package fr.isima.javapro.interceptor;
 
 import fr.isima.javapro.invocation.Invocation;
 
-/**
- *
- * @author Ulrich EZA
- */
-public interface Interceptor {
-    
+public interface Interceptor { 
     Object invoke(Invocation invocation);
 }

@@ -4,12 +4,9 @@
  * and open the template in the editor.
  */
 
-package fr.isima.javapro.ejb;
+package fr.isima.javapro.annotation;
 
-import fr.isima.javapro.annotation.Local;
-
-@Local
-public interface SecondEJBLocal extends EJBInterface {
-    
-    public void remove();
+public enum TransactionAttributeType {
+    REQUIRED,
+    REQUIRES_NEW
 }
