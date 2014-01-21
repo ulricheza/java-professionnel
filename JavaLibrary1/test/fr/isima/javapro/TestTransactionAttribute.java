@@ -7,9 +7,8 @@
 package fr.isima.javapro;
 
 import fr.isima.javapro.annotation.EJB;
-import fr.isima.javapro.annotation.PersistenceContext;
 import fr.isima.javapro.ejb.FifthEJBLocal;
-import fr.isima.javapro.persistence.EntityManager;
+import fr.isima.javapro.entity.Item;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -18,9 +17,6 @@ public class TestTransactionAttribute {
     
     @EJB
     private FifthEJBLocal ejb;
-    
-    @PersistenceContext
-    private EntityManager em;
     
     @Before
     public void setUp() {
@@ -33,27 +29,18 @@ public class TestTransactionAttribute {
     }
     
     @Test
-    public void testRequiredNew(){
-        try{
-            ejb.addRequiredNew("1");
-        }
-        catch(Exception e){
-            
-        }
-        finally{        
-            assert(em.count() == 2);
-            ejb.clear();
-        }
-    }   
+    public void testRequired(){
+        
+        ejb.addRequired(new Item());
+        assert(ejb.count() == 0);  
+        ejb.clear();
+    }  
     
     @Test
-    public void testRequired(){
-        try{
-            ejb.addRequired("1");
-        }
-        catch(Exception e){
-            
-        }
-        assert(em.count() == 0);     
-    }   
+    public void testRequiredNew(){
+        
+        ejb.addRequiredNew(new Item());
+        assert(ejb.count() == 1);
+        ejb.clear();
+    }    
 }

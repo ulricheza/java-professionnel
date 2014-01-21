@@ -8,18 +8,12 @@ package fr.isima.javapro;
 
 // <editor-fold defaultstate="collapsed" desc="Imports">
 import fr.isima.javapro.annotation.EJB;
+import fr.isima.javapro.annotation.Local;
 import fr.isima.javapro.annotation.PersistenceContext;
+import fr.isima.javapro.annotation.Singleton;
+import fr.isima.javapro.annotation.Statefull;
 import fr.isima.javapro.annotation.Stateless;
-import fr.isima.javapro.ejb.FifthEJB;
-import fr.isima.javapro.ejb.FifthEJBLocal;
-import fr.isima.javapro.ejb.FirstEJB;
-import fr.isima.javapro.ejb.FirstEJBLocal;
-import fr.isima.javapro.ejb.FourthEJB;
-import fr.isima.javapro.ejb.FourthEJBLocal;
-import fr.isima.javapro.ejb.SecondEJB;
-import fr.isima.javapro.ejb.SecondEJBLocal;
-import fr.isima.javapro.ejb.ThirdEJB;
-import fr.isima.javapro.ejb.ThirdEJBLocal;
+import fr.isima.javapro.exception.EJBException;
 import fr.isima.javapro.interceptor.Interceptor;
 import fr.isima.javapro.interceptor.MethodInterceptor;
 import fr.isima.javapro.interceptor.TransactionAttributeInterceptor;
@@ -44,7 +38,7 @@ import javax.annotation.PreDestroy;
 public class EJBContainer {
     
     private static EJBContainer INSTANCE;
-    private final Level LOG_LEVEL = Level.FINER;
+    private final Level LOG_LEVEL = Level.OFF;
     private final Map<Class<?>, Class<?>> registry;
     private final Map<Class<?>, Object> listProxys;
     private final List<EJBStatus> listEJBs;
@@ -73,13 +67,8 @@ public class EJBContainer {
     
     private void bootstrapInit() {
         // scan all classes of the classLoader
-        
+                
         // find EJB interfaces map EJB to implementation
-        registry.put(FirstEJBLocal.class, FirstEJB.class);
-        registry.put(SecondEJBLocal.class,SecondEJB.class);
-        registry.put(ThirdEJBLocal.class, ThirdEJB.class);
-        registry.put(FourthEJBLocal.class, FourthEJB.class);
-        registry.put(FifthEJBLocal.class, FifthEJB.class);
         
         // manage errors
     }
@@ -126,16 +115,44 @@ public class EJBContainer {
     }
     // </editor-fold>
     
-    private <T> Object createProxy(Class<T> beanInterface, Class<? extends T> beanClass){
+    private <T> Object createProxy(Class<T> beanInterface, Class<? extends T> beanClass){       
         return Proxy.newProxyInstance(
                 Thread.currentThread().getContextClassLoader(),
                 new Class[] {beanInterface},
                 new EJBInvocationHandler(beanClass,interceptors));
     }
     
-    private <T> Object createProxy(Class<T> beanInterface){
+    private <T> Object createProxy(Class<T> beanInterface){ 
         Class<? extends T> beanClass = (Class<? extends T>) registry.get(beanInterface);
-               
+        
+        if (beanClass == null){   // the corresponding interface hasn't been found yet
+            String className = null;
+            try{
+                // searching the implementation of the beanInterface
+                String interfaceName = beanInterface.getName();
+
+                // We assume the name of the EJB is the same as the interface minus "Local" at the end
+                className =  interfaceName.substring(0, interfaceName.length()-"Local".length());         
+                beanClass = (Class<? extends T>) Class.forName(className);
+                
+                // checks that either @Stateless, @Statefull or @Stateless is specified on the class
+                if (
+                        !beanClass.isAnnotationPresent(Statefull.class) &&
+                        !beanClass.isAnnotationPresent(Stateless.class) &&
+                        !beanClass.isAnnotationPresent(Singleton.class)
+                   )
+                {
+                    throw new EJBException("Class "+className+" isn't an EJB");
+                }              
+                    
+                registry.put(beanInterface, Class.forName(className));
+            }
+            catch(ClassNotFoundException ex){
+                LOG.log(Level.SEVERE, null, ex);
+                throw new EJBException("EJB "+className+" not found in classpath");
+            }
+        }
+                  
         Object proxy = listProxys.get(beanClass);        
         if (proxy == null){
             proxy = createProxy(beanInterface,beanClass);
@@ -181,20 +198,7 @@ public class EJBContainer {
         }
         catch (IllegalArgumentException | IllegalAccessException | InstantiationException ex) {
             LOG.log(Level.SEVERE, null, ex);
-        }
-        // scan all @EJB and inject EJB implementations
-        
-        // manage @Stateless & @Statefull & @Singleton strategies -> do not arrange EJB pool
-        
-        // manage @PostConstruct
-        
-        // manage @PreDestroy
-        
-        // manage @PersistenceContext injection
-        
-        // manage @TransactionAttribute (Required and Required new)
-        
-        // manage errors
+        }     
     }
     
     public void close(){
@@ -209,6 +213,7 @@ public class EJBContainer {
         }
         
         listEJBs.clear();
+        registry.clear();
     }
     
     public EJBStatus addEJB(Object ejb){

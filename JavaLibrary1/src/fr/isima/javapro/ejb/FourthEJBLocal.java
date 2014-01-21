@@ -7,12 +7,13 @@
 package fr.isima.javapro.ejb;
 
 import fr.isima.javapro.annotation.Local;
+import fr.isima.javapro.entity.Item;
 
 @Local
 public interface FourthEJBLocal {
     
-    void addRequired(Object item);
-    void addRequiredNew(Object item);
+    void addRequired(Item item);
+    void addRequiredNew(Item item);
     int count();
     void remove();
 }
