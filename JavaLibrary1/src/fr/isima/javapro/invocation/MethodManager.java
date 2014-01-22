@@ -29,18 +29,12 @@ public class MethodManager {
         return null;
     }
     
-    public static Object invokeMethod (Object bean, Method method, Object[] args){
-        Object result;
+    public static Object invokeMethod (Object bean, Method method, Object[] args)
+            throws IllegalAccessException, IllegalArgumentException, InvocationTargetException{
         
-        try {
-            LOG.entering(bean.getClass().getName(), method.getName());
-            result = method.invoke(bean, args);
-            LOG.exiting(bean.getClass().getName(), method.getName());
-        } 
-        catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
-            //LOG.throwing(bean.getClass().getName(), method.getName(), ex);           
-            throw new MethodInvocationException(ex);
-        }
+        LOG.entering(bean.getClass().getName(), method.getName());
+        Object result = method.invoke(bean, args);
+        LOG.exiting(bean.getClass().getName(), method.getName());
         
         return result;
     }

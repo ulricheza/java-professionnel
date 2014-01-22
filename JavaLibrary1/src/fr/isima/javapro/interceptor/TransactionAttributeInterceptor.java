@@ -26,10 +26,12 @@ public class TransactionAttributeInterceptor implements Interceptor {
         else if (beanClass.isAnnotationPresent(TransactionAttribute.class))
             type = beanClass.getAnnotation(TransactionAttribute.class).value();
             
+        invocation.setTransactionLevel(type);
         switch(type){
             case REQUIRED:
                 if(!EJBContainer.getInstance().isTransactionOpened())
                     openTransaction(invocation);
+                
                 break;
                 
             case REQUIRES_NEW:
@@ -42,6 +44,6 @@ public class TransactionAttributeInterceptor implements Interceptor {
     
     private void openTransaction(Invocation invocation){
         EJBContainer.getInstance().openTransaction();
-        invocation.setTransactionOpened(true);
+        invocation.setHasCreatedTransaction(true);
     }
 }
