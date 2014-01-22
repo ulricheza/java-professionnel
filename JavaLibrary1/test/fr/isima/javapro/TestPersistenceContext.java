@@ -9,7 +9,6 @@ package fr.isima.javapro;
 import fr.isima.javapro.annotation.EJB;
 import fr.isima.javapro.annotation.PersistenceContext;
 import fr.isima.javapro.ejb.FourthEJBLocal;
-import fr.isima.javapro.entity.Item;
 import fr.isima.javapro.persistence.EntityManager;
 import org.junit.After;
 import org.junit.Before;
@@ -35,11 +34,10 @@ public class TestPersistenceContext {
     
     @Test
     public void persistenceContext(){
-        // TODO
         assert(em instanceof EntityManager);
         assert(ejb.count() == 0);
         
-        em.persist(new Item());
+        em.persist(new Object());
         assert(ejb.count() == 1);
         
         ejb.remove();

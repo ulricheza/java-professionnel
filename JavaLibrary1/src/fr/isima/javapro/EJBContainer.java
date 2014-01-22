@@ -125,7 +125,7 @@ public class EJBContainer {
     private <T> Object createProxy(Class<T> beanInterface){ 
         Class<? extends T> beanClass = (Class<? extends T>) registry.get(beanInterface);
         
-        if (beanClass == null){   // the corresponding interface hasn't been found yet
+        if (beanClass == null){   // the mapping interface hasn't been found yet
             String className = null;
             try{
                 // searching the implementation of the beanInterface
@@ -145,7 +145,7 @@ public class EJBContainer {
                     throw new EJBException("Class "+className+" isn't an EJB");
                 }              
                     
-                registry.put(beanInterface, Class.forName(className));
+                registry.put(beanInterface, beanClass);
             }
             catch(ClassNotFoundException ex){
                 LOG.log(Level.SEVERE, null, ex);
@@ -172,6 +172,12 @@ public class EJBContainer {
                 
                 if (f.isAnnotationPresent(EJB.class)){                    
                     Class<?> beanInterface = (Class<?>) f.getGenericType();
+                    
+                    // checks that @Local is specified on the interface
+                    if (!beanInterface.isAnnotationPresent(Local.class)){
+                        throw new EJBException("Missing @Local annotation on "
+                                             + "interface "+beanInterface.getName());
+                    }   
                     
                     // proxy creation
                     Object proxy = createProxy(beanInterface);

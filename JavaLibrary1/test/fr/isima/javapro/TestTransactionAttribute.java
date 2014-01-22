@@ -8,7 +8,7 @@ package fr.isima.javapro;
 
 import fr.isima.javapro.annotation.EJB;
 import fr.isima.javapro.ejb.FifthEJBLocal;
-import fr.isima.javapro.entity.Item;
+import fr.isima.javapro.ejb.FourthEJBLocal;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -17,7 +17,10 @@ import org.junit.Test;
 public class TestTransactionAttribute {
     
     @EJB
-    private FifthEJBLocal ejb;
+    private FourthEJBLocal ejb1;
+     
+    @EJB
+    private FifthEJBLocal ejb2;
     
     @Before
     public void setUp() {
@@ -30,29 +33,62 @@ public class TestTransactionAttribute {
     }
     
     @Test
-    public void testRequired(){        
-       try{
-            ejb.addRequired(new Item());
+    public void testRequired1(){
+        try{
+            ejb1.addRequired(new Object());
             Assert.fail();
        }
        catch (Exception e){
-           assert(e.getCause() instanceof ArithmeticException);
-           assert(ejb.count() == 0);
-           ejb.clear();      
+           assert(rootCause(e) instanceof ArithmeticException);
+           assert(ejb1.count() == 0);
+           ejb1.remove();      
+       }        
+    }
+    
+    @Test
+    public void testRequired2(){        
+       try{
+            ejb2.addRequired(new Object());
+            Assert.fail();
+       }
+       catch (Exception e){
+           assert(rootCause(e) instanceof ArithmeticException);
+           assert(ejb2.count() == 0);
+           ejb2.clear();      
        }
     }
     
     @Test
-    public void testRequiredNew(){
+    public void testRequiredNew1(){
         
        try{
-            ejb.addRequiredNew(new Item());
+            ejb1.addRequiredNew(new Object());
             Assert.fail();
        }
        catch (Exception e){
-           assert(e.getCause() instanceof ArithmeticException);
-           assert(ejb.count() == 1);
-           ejb.clear();      
+           assert(rootCause(e) instanceof ArithmeticException);
+           assert(ejb1.count() == 0);
+           ejb1.remove();
        }
     } 
+    
+    @Test
+    public void testRequiredNew2(){
+        
+       try{
+            ejb2.addRequiredNew(new Object());
+            Assert.fail();
+       }
+       catch (Exception e){
+           assert(rootCause(e) instanceof ArithmeticException);
+           assert(ejb2.count() == 1);
+           ejb2.clear();      
+       }
+    } 
+    
+    private Throwable rootCause(Exception e){
+        Throwable th = e;
+        while(th.getCause() != null) th= th.getCause();
+        return th;
+    }
 }

@@ -10,7 +10,6 @@ import fr.isima.javapro.annotation.EJB;
 import fr.isima.javapro.annotation.PersistenceContext;
 import fr.isima.javapro.annotation.Remove;
 import fr.isima.javapro.annotation.Statefull;
-import fr.isima.javapro.entity.Item;
 import fr.isima.javapro.persistence.EntityManager;
 
 @Statefull
@@ -23,15 +22,15 @@ public class FifthEJB implements FifthEJBLocal {
     private FourthEJBLocal ejb;
     
     @Override
-    public void addRequired(Item item){
+    public void addRequired(Object item){
         em.persist(item);
-        ejb.addRequired(new Item());
+        ejb.addRequired(item);
     }
     
     @Override
-    public void addRequiredNew(Item item){
+    public void addRequiredNew(Object item){
         em.persist(item);
-        ejb.addRequiredNew(new Item());
+        ejb.addRequiredNew(item);
     }
     
     @Override

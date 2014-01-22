@@ -11,7 +11,6 @@ import fr.isima.javapro.annotation.Remove;
 import fr.isima.javapro.annotation.Statefull;
 import fr.isima.javapro.annotation.TransactionAttribute;
 import fr.isima.javapro.annotation.TransactionAttributeType;
-import fr.isima.javapro.entity.Item;
 import fr.isima.javapro.persistence.EntityManager;
 
 @Statefull
@@ -22,14 +21,14 @@ public class FourthEJB implements FourthEJBLocal{
     private EntityManager em;
         
     @Override
-    public void addRequired(Item item){
+    public void addRequired(Object item){
         em.persist(item);
         float i = 0/0;
     }
     
     @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     @Override
-    public void addRequiredNew(Item item){
+    public void addRequiredNew(Object item){
         em.persist(item);
         float i = 0/0;
     }

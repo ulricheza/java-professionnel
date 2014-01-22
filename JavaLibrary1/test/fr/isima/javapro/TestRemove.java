@@ -9,6 +9,7 @@ package fr.isima.javapro;
 import fr.isima.javapro.annotation.EJB;
 import fr.isima.javapro.ejb.SecondEJBLocal;
 import fr.isima.javapro.exception.NoSuchEJBException;
+import junit.framework.Assert;
 import org.junit.After;
 import org.junit.Test;
 import org.junit.Before;
@@ -28,10 +29,16 @@ public class TestRemove {
         EJBContainer.getInstance().close();
     }
     
-    @Test(expected = NoSuchEJBException.class)    
+    @Test 
     public void remove() {
         assert (ejbStatefull.getValue() == 5);        
         ejbStatefull.remove(); // The EJB should be released after this method (@Remove annotation)
-        ejbStatefull.getValue();
+        try{
+            ejbStatefull.getValue();
+            Assert.fail();
+        }
+        catch(Exception e){
+            assert (e instanceof NoSuchEJBException);
+        }
     }
 }
